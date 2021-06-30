@@ -141,16 +141,22 @@ func showInfo(){
     }
 }
 
-//Change this to enter commands count
-var teamsCount = 8
+class Game{
+    
+    
+    var teamsCount:Int
 
-var teamNames = ["Red","Green","Blue","Yellow","White","Black","Magenta","Pink","Cyan","Purple"]
+    let teamNames = ["Red","Green","Blue","Yellow","White","Black","Magenta","Pink","Cyan","Purple","Brown","Gray","Orange","Gold","Silver","Light Red"]
 
-
-var teams: [Team] = []
+    var teams: [Team] = []
+    
+    init(teamsCount:Int) {
+        self.teamsCount = teamsCount
+    }
+    
 
 func showStats(){
-    print("\(teams.count) teams left\n")
+    Swift.print("\(teams.count) teams left\n")
 for team in teams {
     team.showInfo()
     print()
@@ -193,43 +199,57 @@ for team in teams {
     teams = aliveTeams
 }
 
-//MARK Game cycle
+    func createTeams() {
+        for i in 0..<teamsCount {
+            
+            var newPlayerList:[Player] = []
+            for j in 0..<5 {
+            let player: Player = Player(teamName: teamNames[i], playerId: j)
+            newPlayerList.append(player)
+            }
 
-print("Welcome to Battle Royale!\n")
-
-for i in 0..<teamsCount {
+            let newTeam:Team = Team(name: teamNames[i],players:newPlayerList)
+            teams.append(newTeam)
+        }
+    }
     
-    var newPlayerList:[Player] = []
-    for j in 0..<5 {
-    let player: Player = Player(teamName: teamNames[i], playerId: j)
-    newPlayerList.append(player)
+    
+    func runGame(){
+        
+        print("Welcome to Battle Royale!\n")
+
+        createTeams()
+
+        print("Introducing todays teams:\n")
+        showStats()
+
+        print("Lets begin!\n")
+
+        var round: Int = 1
+
+        while teams.count > 1 {
+            print("Round \(round) began!")
+            print("======================")
+            print("It's time to loot!")
+            print("======================")
+            looting()
+            print("======================")
+            print("It's time to figth!")
+            print("======================")
+            fight()
+            print("======================\n")
+            print("Round \(round) ended. Stats:\n")
+            showStats()
+            round+=1
+        }
+
+        print("Battle is over! Only one team left: \(teams[0].name)")
     }
 
-    let newTeam:Team = Team(name: teamNames[i],players:newPlayerList)
-    teams.append(newTeam)
 }
 
-print("Introducing todays teams:\n")
-showStats()
 
-print("Lets begin!\n")
-
-var round: Int = 1
-
-while teams.count > 1 {
-    print("Round \(round) began!")
-    print("======================")
-    print("It's time to loot!")
-    print("======================")
-    looting()
-    print("======================")
-    print("It's time to figth!")
-    print("======================")
-    fight()
-    print("======================\n")
-    print("Round \(round) ended. Stats:\n")
-    showStats()
-    round+=1
-}
-
-print("Battle is over! Only one team left!")
+//Change this to enter commands count
+let count = 16
+var game = Game(teamsCount: count)
+game.runGame()
