@@ -1,0 +1,231 @@
+class Player{
+    var health:Int?
+    var damage:Int?
+    var defence: Int?
+    init() {
+        self.health = 100
+        self.damage = 10
+        self.defence = 1
+    }
+
+    func showInfo(){
+        print("Player:===============")
+        print("\(String(describing: self.health!)):hp  \(String(describing: self.damage!)):dmg  \(String(describing: self.defence!)):def")
+        print("======================")
+    }
+    
+    func lootWeapon()->Bool{
+        var foundBetterWeapon:Bool = false
+        let foundWeaponDamage = Int.random(in: 0...40)
+            if foundWeaponDamage > self.damage! {
+            self.damage = foundWeaponDamage
+            print("-Player has found a new weapon. His damage is now \(foundWeaponDamage)")
+                foundBetterWeapon = true
+        }
+        return foundBetterWeapon
+    }
+    
+    func lootArmor() -> Bool {
+        var foundBetterArmor:Bool = false
+        let foundArmorDefence = Int.random(in: 0...10)
+            if foundArmorDefence > self.defence! {
+            self.defence = foundArmorDefence
+            print("-Player has found a new armor. His defence is now \(foundArmorDefence)")
+                foundBetterArmor = true
+        }
+        return foundBetterArmor
+    }
+    
+    
+    func lootHealing() -> Bool {
+        var foundHealing = false
+        
+        let foundHealingLevel = Int.random(in: 1...5)
+        if self.health! < 100 {
+            let healHP = foundHealingLevel*10
+            if healHP+self.health! > 100{
+                self.health = 100
+            }else{
+                self.health! += foundHealingLevel*10
+            }
+            print("-Player has found a healing. His health is now \(String(describing: self.health!))")
+            foundHealing = true
+            
+        }
+        return foundHealing
+    }
+    
+    
+    func loot(){
+        let foundSomething:Bool = Int.random(in: 0...10)>6
+        if foundSomething {
+            var foundSomethingBetter:Bool
+            foundSomethingBetter = lootWeapon()
+            foundSomethingBetter = lootArmor()
+            foundSomethingBetter = lootHealing()
+        
+            if foundSomethingBetter == false {
+                print("-Player found only bad things and took nothing")
+            }
+        }
+        else{
+            print("-Player has found nothing")
+        }
+        
+    }
+}
+
+class Team{
+
+var players:[Player]
+
+init(players:[Player]) {
+    self.players = players
+}
+
+func showInfo(){
+    print("\(self.players.count) players left")
+    for player in self.players {
+        player.showInfo()
+    }
+    
+}
+    
+    func attackOtherTeam(target:Team) {
+        if self.players.count == 0 {
+            return
+        }
+        var totalDamage:Int = summarizeDamage()
+        target.players
+        
+        for player in target.players {
+            let damageToPlayer:Int
+            if totalDamage > 1 {
+                 damageToPlayer = Int.random(in: 1...totalDamage)
+            }else{
+                 damageToPlayer = 0
+            }
+            
+            if damageToPlayer > player.defence! {
+                player.health! -= (damageToPlayer - player.defence!)
+                print("-Player lost \(damageToPlayer - player.defence!) health")
+            }
+            totalDamage -= damageToPlayer
+        }
+        target.removeDeadPlayers()
+    }
+    
+    
+    func summarizeDamage()->Int{
+        var damage = 0
+        for player in players {
+            damage+=player.damage!
+        }
+        return damage
+    }
+    
+    func removeDeadPlayers(){
+        var alivePlayers:[Player] = []
+        for player in self.players {
+            if player.health! > 0{
+                alivePlayers.append(player)
+            }else{
+                print("-Player is dead :(")
+            }
+        }
+        self.players = alivePlayers
+    }
+
+
+}
+
+//Change this to enter commands count
+var teamsCount = 8
+
+
+var teams: [Team] = []
+
+func showStats(){
+    print("\(teams.count) teams left\n")
+for team in teams {
+    team.showInfo()
+    print()
+}
+}
+
+func looting(){
+for team in teams {
+    for player in
+team.players {
+        player.loot()
+    }
+    
+}
+
+}
+
+func fight(){
+
+    teams.shuffle()
+    for i in 0..<teams.count where i % 2 == 1 {
+        let first = teams[i-1]
+        let second = teams[i]
+        
+        first.attackOtherTeam(target: second)
+        second.attackOtherTeam(target: first)
+    }
+    removeDeadTeams()
+}
+
+func removeDeadTeams(){
+    var aliveTeams:[Team] = []
+for team in teams {
+    if team.players.count > 0 {
+        aliveTeams.append(team)
+    } else{
+        print("-Team is dead :(")
+    }
+}
+    teams = aliveTeams
+}
+
+//MARK Game cycle
+
+print("Welcome to Battle Royale!\n")
+
+for _ in 0..<teamsCount {
+    
+    var newPlayerList:[Player] = []
+    for _ in 0..<5 {
+    let player: Player = Player()
+    newPlayerList.append(player)
+    }
+
+    let newTeam:Team = Team(players:newPlayerList)
+    teams.append(newTeam)
+}
+
+print("Introducing todays teams:\n")
+showStats()
+
+print("Lets begin!\n")
+
+var round: Int = 1
+
+while teams.count > 1 {
+    print("Round \(round) began!")
+    print("======================")
+    print("It's time to loot!")
+    print("======================")
+    looting()
+    print("======================")
+    print("It's time to figth!")
+    print("======================")
+    fight()
+    print("======================\n")
+    print("Round \(round) ended. Stats:\n")
+    showStats()
+    round+=1
+}
+
+print("Battle is over! Only one team left!")
