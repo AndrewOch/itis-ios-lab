@@ -1,15 +1,17 @@
 class Player{
+    var name:String?
     var health:Int?
     var damage:Int?
     var defence: Int?
-    init() {
+    init(teamName:String, playerId: Int) {
+        self.name = "\(teamName).\(playerId)"
         self.health = 100
         self.damage = 10
         self.defence = 1
     }
 
     func showInfo(){
-        print("Player:===============")
+        print("\(self.name!):===============")
         print("\(String(describing: self.health!)):hp  \(String(describing: self.damage!)):dmg  \(String(describing: self.defence!)):def")
         print("======================")
     }
@@ -19,7 +21,7 @@ class Player{
         let foundWeaponDamage = Int.random(in: 0...40)
             if foundWeaponDamage > self.damage! {
             self.damage = foundWeaponDamage
-            print("-Player has found a new weapon. His damage is now \(foundWeaponDamage)")
+            print("-\(self.name!) has found a new weapon. His damage is now \(foundWeaponDamage)")
                 foundBetterWeapon = true
         }
         return foundBetterWeapon
@@ -30,7 +32,7 @@ class Player{
         let foundArmorDefence = Int.random(in: 0...10)
             if foundArmorDefence > self.defence! {
             self.defence = foundArmorDefence
-            print("-Player has found a new armor. His defence is now \(foundArmorDefence)")
+            print("-\(self.name!) has found a new armor. His defence is now \(foundArmorDefence)")
                 foundBetterArmor = true
         }
         return foundBetterArmor
@@ -48,7 +50,7 @@ class Player{
             }else{
                 self.health! += foundHealingLevel*10
             }
-            print("-Player has found a healing. His health is now \(String(describing: self.health!))")
+            print("-\(self.name!) has found a healing. His health is now \(String(describing: self.health!))")
             foundHealing = true
             
         }
@@ -65,11 +67,11 @@ class Player{
             foundSomethingBetter = lootHealing()
         
             if foundSomethingBetter == false {
-                print("-Player found only bad things and took nothing")
+                print("-\(self.name!) found only bad things and took nothing")
             }
         }
         else{
-            print("-Player has found nothing")
+            print("-\(self.name!) has found nothing")
         }
         
     }
@@ -78,9 +80,11 @@ class Player{
 class Team{
 
 var players:[Player]
+    var name:String
 
-init(players:[Player]) {
+    init(name:String,players:[Player]) {
     self.players = players
+        self.name = name
 }
 
 func showInfo(){
@@ -108,7 +112,7 @@ func showInfo(){
             
             if damageToPlayer > player.defence! {
                 player.health! -= (damageToPlayer - player.defence!)
-                print("-Player lost \(damageToPlayer - player.defence!) health")
+                print("-\(player.name!) lost \(damageToPlayer - player.defence!) health")
             }
             totalDamage -= damageToPlayer
         }
@@ -130,17 +134,17 @@ func showInfo(){
             if player.health! > 0{
                 alivePlayers.append(player)
             }else{
-                print("-Player is dead :(")
+                print("-\(player.name!)  is dead :(")
             }
         }
         self.players = alivePlayers
     }
-
-
 }
 
 //Change this to enter commands count
 var teamsCount = 8
+
+var teamNames = ["Red","Green","Blue","Yellow","White","Black","Magenta","Pink","Cyan","Purple"]
 
 
 var teams: [Team] = []
@@ -183,7 +187,7 @@ for team in teams {
     if team.players.count > 0 {
         aliveTeams.append(team)
     } else{
-        print("-Team is dead :(")
+        print("-\(team.name) is dead :(")
     }
 }
     teams = aliveTeams
@@ -193,15 +197,15 @@ for team in teams {
 
 print("Welcome to Battle Royale!\n")
 
-for _ in 0..<teamsCount {
+for i in 0..<teamsCount {
     
     var newPlayerList:[Player] = []
-    for _ in 0..<5 {
-    let player: Player = Player()
+    for j in 0..<5 {
+    let player: Player = Player(teamName: teamNames[i], playerId: j)
     newPlayerList.append(player)
     }
 
-    let newTeam:Team = Team(players:newPlayerList)
+    let newTeam:Team = Team(name: teamNames[i],players:newPlayerList)
     teams.append(newTeam)
 }
 
